@@ -379,6 +379,8 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
         }
         listener.getLogger().println("Upload Command Output:");
         listener.getLogger().println("File ID = " + fileID);
+        String fileUrl = Region.fromValue(region).getBaseUrl() + "dashboard/file/" + fileID;
+        listener.getLogger().println("File URL = " + fileUrl);
 
         return fileID;
     }
@@ -596,10 +598,11 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
 
         @POST
         public ListBoxModel doFillRegionItems() {
-            return new ListBoxModel(
-                    new ListBoxModel.Option("Global", "global"),
-                    new ListBoxModel.Option("Saudi", "saudi")
-            );
+            ListBoxModel items = new ListBoxModel();
+            for (Region region : Region.values()) {
+                items.add(new ListBoxModel.Option(region.getDisplayName(), region.getValue()));
+            }
+            return items;
         }
 
         @SuppressWarnings("deprecation")
