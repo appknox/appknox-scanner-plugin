@@ -456,10 +456,8 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
         // Handle the process exit code
         if (exitCode != 0) {
             if (run != null) {
-                String errorMsg = "Vulnerabilities detected. Failing the build.";
-                listener.error(errorMsg);
                 run.setResult(Result.FAILURE);
-                throw new AbortException(errorMsg);
+                throw new AbortException("Vulnerabilities detected. Failing the build.");
             }
             return false;
         }
