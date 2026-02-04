@@ -381,6 +381,8 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
         }
         listener.getLogger().println("Upload Command Output:");
         listener.getLogger().println("File ID = " + fileID);
+        String fileUrl = Region.fromValue(region).getBaseUrl() + "dashboard/file/" + fileID;
+        listener.getLogger().println("File URL = " + fileUrl);
 
         return fileID;
     }
@@ -446,10 +448,8 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
         // Handle the process exit code
         if (exitCode != 0) {
             if (run != null) {
-                String errorMsg = "Vulnerabilities detected. Failing the build.";
-                listener.error(errorMsg);
                 run.setResult(Result.FAILURE);
-                throw new AbortException(errorMsg);
+                throw new AbortException("Vulnerabilities detected. Failing the build.");
             }
             return false;
         }
@@ -598,11 +598,11 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
 
         @POST
         public ListBoxModel doFillRegionItems() {
-            return new ListBoxModel(
-                    new ListBoxModel.Option("Global", "global"),
-                    new ListBoxModel.Option("Saudi", "saudi"),
-                    new ListBoxModel.Option("UAE", "uae")
-            );
+            ListBoxModel items = new ListBoxModel();
+            for (Region region : Region.values()) {
+                items.add(new ListBoxModel.Option(region.getDisplayName(), region.getValue()));
+            }
+            return items;
         }
 
         @SuppressWarnings("deprecation")
