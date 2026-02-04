@@ -362,15 +362,23 @@ public class AppknoxScanner extends Builder implements SimpleBuildStep {
         command.add("--region");
         command.add(region);
 
+        // Print the command for debugging
+        listener.getLogger().println("Executing upload command: " + String.join(" ", command));
+
         ArgumentListBuilder args = new ArgumentListBuilder(command.toArray(new String[0]));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        Proc proc = launcher.launch().cmds(args).envs(env).stdout(outputStream).pwd(workspace).quiet(true).start();
+        Proc proc = launcher.launch().cmds(args).envs(env).stdout(outputStream).stderr(errorStream).pwd(workspace).quiet(true).start();
         int exitCode = proc.join();
 
         if (exitCode != 0) {
             listener.getLogger().println("Upload failed with exit code: " + exitCode);
+            String errorOutput = errorStream.toString("UTF-8").trim();
+            if (!errorOutput.isEmpty()) {
+                listener.getLogger().println("Error: " + errorOutput);
+            }
             return null;
         }
 
